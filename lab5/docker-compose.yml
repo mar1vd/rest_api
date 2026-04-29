@@ -1,0 +1,8 @@
+services:
+  api:
+    build: .
+    container_name: lab5_flask_api
+    ports:
+      - "8002:5000"
+    environment:
+      FLASK_ENV: production
