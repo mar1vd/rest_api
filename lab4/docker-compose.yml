@@ -1,0 +1,27 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: lab4_mongo_db
+    restart: always
+    environment:
+      MONGO_INITDB_DATABASE: library
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  api:
+    build: .
+    container_name: lab4_fastapi_app
+    depends_on:
+      - mongo
+    ports:
+      - "8001:8000"
+    environment:
+      MONGO_URL: mongodb://mongo:27017
+      MONGO_DB: library
+    command: >
+      sh -c "sleep 5 && uvicorn main:app --host 0.0.0.0 --port 8000"
+
+volumes:
+  mongo_data:
