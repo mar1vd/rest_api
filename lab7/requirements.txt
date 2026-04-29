@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pymongo
+python-jose[cryptography]
+python-multipart
+redis
+pydantic
+pytest
+httpx
