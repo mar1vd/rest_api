@@ -3,8 +3,9 @@ services:
     image: stoplight/prism:4
     container_name: lab8_prism_mock
     ports:
-      - '4010:4010'
+      - "4010:4010"
     volumes:
       - ./api-spec.yaml:/srv/api-spec.yaml:ro
-    command: ["mock", "/srv/api-spec.yaml", "--host", "0.0.0.0", "--port", "4010"]
+    command:
+      ["mock", "/srv/api-spec.yaml", "--host", "0.0.0.0", "--port", "4010"]
     restart: unless-stopped

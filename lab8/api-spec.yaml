@@ -12,7 +12,7 @@ paths:
       tags:
         - root
       responses:
-        '200':
+        "200":
           description: Root API status
           content:
             application/json:
@@ -32,7 +32,7 @@ paths:
       tags:
         - health
       responses:
-        '200':
+        "200":
           description: Service status
           content:
             application/json:
@@ -63,7 +63,7 @@ paths:
                 - username
                 - password
       responses:
-        '200':
+        "200":
           description: Token pair
           content:
             application/json:
@@ -84,9 +84,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RefreshTokenRequest'
+              $ref: "#/components/schemas/RefreshTokenRequest"
       responses:
-        '200':
+        "200":
           description: New access token
           content:
             application/json:
@@ -117,7 +117,7 @@ paths:
             default: 10
           example: 10
       responses:
-        '200':
+        "200":
           description: Paginated books
           content:
             application/json:
@@ -152,7 +152,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BookCreate'
+              $ref: "#/components/schemas/BookCreate"
             examples:
               createBook:
                 summary: Create book example
@@ -163,7 +163,7 @@ paths:
                   year: 2003
                   status: available
       responses:
-        '201':
+        "201":
           description: Created book
           content:
             application/json:
@@ -192,7 +192,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '200':
+        "200":
           description: Book detail
           content:
             application/json:
@@ -206,7 +206,7 @@ paths:
                     description: "A guide to pragmatic software development."
                     year: 1999
                     status: available
-        '404':
+        "404":
           description: Book not found
           content:
             application/json:
@@ -222,7 +222,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '204':
+        "204":
           description: Book deleted successfully
 components:
   securitySchemes:
@@ -256,7 +256,7 @@ components:
         - status
     BookResponse:
       allOf:
-        - $ref: '#/components/schemas/BookCreate'
+        - $ref: "#/components/schemas/BookCreate"
         - type: object
           properties:
             id:
