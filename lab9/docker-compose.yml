@@ -1,0 +1,31 @@
+services:
+  prism:
+    image: stoplight/prism:4
+    container_name: lab9_prism_mock
+    ports:
+      - "4010:4010"
+    volumes:
+      - ./api-spec.yaml:/srv/api-spec.yaml:ro
+    command:
+      ["mock", "/srv/api-spec.yaml", "--host", "0.0.0.0", "--port", "4010"]
+    restart: unless-stopped
+
+  locust:
+    image: locustio/locust:latest
+    container_name: lab9_locust
+    depends_on:
+      - prism
+    ports:
+      - "8089:8089"
+    volumes:
+      - ./locustfile.py:/mnt/locust/locustfile.py:ro
+    command:
+      [
+        "-f",
+        "/mnt/locust/locustfile.py",
+        "--host",
+        "http://prism:4010",
+        "--web-host",
+        "0.0.0.0",
+      ]
+    restart: unless-stopped

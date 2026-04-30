@@ -1,0 +1,272 @@
+openapi: 3.0.1
+info:
+  title: Library API Mock
+  description: Mock API for the book library using Stoplight Prism.
+  version: 1.0.0
+servers:
+  - url: http://localhost:4010
+paths:
+  /:
+    get:
+      summary: API root
+      tags:
+        - root
+      responses:
+        "200":
+          description: Root API status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  status:
+                    type: string
+              example:
+                message: Library API mock is running
+                status: ok
+  /health:
+    get:
+      summary: Health check
+      tags:
+        - health
+      responses:
+        "200":
+          description: Service status
+          content:
+            application/json:
+              examples:
+                healthy:
+                  summary: OK response
+                  value:
+                    status: ok
+  /auth/token:
+    post:
+      summary: Obtain bearer access and refresh tokens
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: admin
+                password:
+                  type: string
+                  example: secret
+              required:
+                - username
+                - password
+      responses:
+        "200":
+          description: Token pair
+          content:
+            application/json:
+              examples:
+                tokenPair:
+                  summary: Access and refresh token pair
+                  value:
+                    access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+                    refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+                    token_type: bearer
+  /auth/refresh:
+    post:
+      summary: Refresh access token using refresh token
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenRequest"
+      responses:
+        "200":
+          description: New access token
+          content:
+            application/json:
+              examples:
+                refreshedToken:
+                  summary: New access token response
+                  value:
+                    access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+                    token_type: bearer
+  /books:
+    get:
+      summary: List books
+      tags:
+        - books
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: skip
+          schema:
+            type: integer
+            default: 0
+          example: 0
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          example: 10
+      responses:
+        "200":
+          description: Paginated books
+          content:
+            application/json:
+              examples:
+                default:
+                  summary: Paginated list of books
+                  value:
+                    items:
+                      - id: "1"
+                        title: "The Pragmatic Programmer"
+                        author: "Andrew Hunt"
+                        description: "A guide to pragmatic software development."
+                        year: 1999
+                        status: available
+                      - id: "2"
+                        title: "Clean Code"
+                        author: "Robert C. Martin"
+                        description: "A handbook of agile software craftsmanship."
+                        year: 2008
+                        status: available
+                    total: 2
+                    skip: 0
+                    limit: 10
+    post:
+      summary: Create a new book
+      tags:
+        - books
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookCreate"
+            examples:
+              createBook:
+                summary: Create book example
+                value:
+                  title: "Domain-Driven Design"
+                  author: "Eric Evans"
+                  description: "Tackling complexity in the heart of software."
+                  year: 2003
+                  status: available
+      responses:
+        "201":
+          description: Created book
+          content:
+            application/json:
+              examples:
+                createdBook:
+                  summary: Created book response
+                  value:
+                    id: "3"
+                    title: "Domain-Driven Design"
+                    author: "Eric Evans"
+                    description: "Tackling complexity in the heart of software."
+                    year: 2003
+                    status: available
+  /books/{book_id}:
+    parameters:
+      - in: path
+        name: book_id
+        required: true
+        schema:
+          type: string
+        example: "1"
+    get:
+      summary: Get a single book by ID
+      tags:
+        - books
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Book detail
+          content:
+            application/json:
+              examples:
+                bookDetail:
+                  summary: Book detail example
+                  value:
+                    id: "1"
+                    title: "The Pragmatic Programmer"
+                    author: "Andrew Hunt"
+                    description: "A guide to pragmatic software development."
+                    year: 1999
+                    status: available
+        "404":
+          description: Book not found
+          content:
+            application/json:
+              examples:
+                notFound:
+                  summary: Not found response
+                  value:
+                    detail: Book not found
+    delete:
+      summary: Delete a book by ID
+      tags:
+        - books
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Book deleted successfully
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    BookCreate:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Domain-Driven Design"
+        author:
+          type: string
+          example: "Eric Evans"
+        description:
+          type: string
+          example: "Tackling complexity in the heart of software."
+        year:
+          type: integer
+          example: 2003
+        status:
+          type: string
+          example: available
+      required:
+        - title
+        - author
+        - year
+        - status
+    BookResponse:
+      allOf:
+        - $ref: "#/components/schemas/BookCreate"
+        - type: object
+          properties:
+            id:
+              type: string
+              example: "1"
+    RefreshTokenRequest:
+      type: object
+      properties:
+        refresh_token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      required:
+        - refresh_token
